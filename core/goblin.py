@@ -35,5 +35,3 @@ class Goblin:
         else:
             return False
 
-    def run_away(self):
-        pass

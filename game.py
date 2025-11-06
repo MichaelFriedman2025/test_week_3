@@ -1,10 +1,10 @@
 import random
-
 from core.player import Player
 from core.orc import Orc
 from core.goblin import Goblin
 
 class Game:
+    __bamboo = []
 
     @staticmethod
     def show_manu():
@@ -45,16 +45,24 @@ class Game:
 
     def start(self):
         player = self.create_player()
-        monster = self.choose_random_monster()
+
+        for cm in range(8):
+            Game.__bamboo.append(self.choose_random_monster())
+
+        monster = Game.__bamboo[-1]
+
+        print(f"monster: {monster.name} ,type: {monster.type}, hp: {monster.hp}\n"
+              f"player: {player.name}, hp: {player.hp}\n")
 
         player_rolling = self.roll_dice(6)
         monster_rolling = self.roll_dice(6)
+
         if player.speed + player_rolling >= monster.speed + monster_rolling:
             attack = True
+            print(f"the {player.name} attacking\n")
         else:
             attack = False
-        print(f"monster: {monster.name} ,type: {monster.type}, hp: {monster.hp}")
-        print(f"player: {player.name}, hp: {player.hp}\n")
+            print(f"the {monster.name} attacking\n")
 
         while True:
             answer = self.show_manu()
@@ -66,27 +74,34 @@ class Game:
             if res_attack:
                 print(f"monster: {monster.name} ,type: {monster.type}, hp: {monster.hp}")
                 print(f"player: {player.name}, hp: {player.hp}\n")
-                print("The attacking completed")
+                print("The attacking completed\n")
                 if attack:
                     if monster.hp <= 0:
-                        print("the monster dead, you won :)")
-                        break
+                        if not Game.__bamboo:
+                            print("you won all monster you finish the game, well don.")
+                            break
+                        else:
+                            Game.__bamboo.pop()
+                            monster = Game.__bamboo[-1]
+                            print(f"the monster dead,"
+                                  f" You have killed {8 - len(Game.__bamboo)} monsters so far. :)\n"
+                                  f"You move to the next room.\n"
+                                  f"monster: {monster.name} ,type: {monster.type}, hp: {monster.hp}\n"
+                                  f"player: {player.name}, hp: {player.hp}\n")
+
                 else:
                     if player.hp <= 0:
                         print("you dont have a life, you are dead :(")
                         break
             else:
-                print("the attack missed")
+                print("the attack missed\n")
 
             if attack:
                 attack = False
-                print(f"now torn {player.name} to attacking")
-                print(monster.speak())
-                print()
+                print(f"now torn {monster.name} to attacking")
+                print(player.speak(),"\n")
             else:
                 attack = True
-                print(f"now torn {monster.name} to attacking")
-                print(player.speak())
-                print()
-
+                print(f"now torn {player.name} to attacking")
+                print(monster.speak(),"\n")
 
